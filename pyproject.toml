@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "traceweave"
+version = "0.1.0"
+description = "Agent trajectory forensics from local JSONL traces."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "Dr. Nripanka Das"}]
+keywords = ["ai agents", "observability", "llmops", "evaluation", "traces"]
+
+[project.scripts]
+traceweave = "traceweave.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
