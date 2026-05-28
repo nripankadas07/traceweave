@@ -29,6 +29,14 @@ def load_jsonl(path: Union[str, Path]) -> List[Dict[str, Any]]:
     return events
 
 
+def load_patchgym_run(path: Union[str, Path]) -> List[Dict[str, Any]]:
+    run_dir = Path(path)
+    trace = run_dir / "trace.jsonl"
+    if not trace.exists():
+        raise FileNotFoundError(f"PatchGym trace not found: {trace}")
+    return load_jsonl(trace)
+
+
 def _stable_json(value: Any) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), default=str)
 
@@ -52,11 +60,16 @@ def event_signature(event: Mapping[str, Any]) -> str:
 
 def _is_error(event: Mapping[str, Any]) -> bool:
     status = str(event.get("status", "")).lower()
+    explicit_error = str(event.get("error", "")).strip()
+    if status in {"ok", "pass", "passed", "success", "succeeded"}:
+        return bool(explicit_error)
+    if status in {"error", "failed", "fail", "timeout"}:
+        return True
     text = " ".join(
         str(event.get(key, "")).lower()
         for key in ("error", "output", "message", "stderr")
     )
-    return status in {"error", "failed", "timeout"} or any(word in text for word in ERROR_WORDS)
+    return any(word in text for word in ERROR_WORDS)
 
 
 def detect_loops(signatures: Sequence[str], max_period: int = 6) -> List[Dict[str, Any]]:

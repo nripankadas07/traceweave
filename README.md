@@ -31,6 +31,7 @@ python -m pip install -e .
 ```bash
 traceweave analyze examples/trace.jsonl
 traceweave analyze examples/trace.jsonl --json
+traceweave patchgym .patchgym/runs/latest --json
 ```
 
 A trace is newline-delimited JSON:
@@ -53,6 +54,11 @@ A trace is newline-delimited JSON:
 TraceWeave is not a hosted dashboard, not a model judge, and
 not a replacement for full OpenTelemetry pipelines. It is a
 small deterministic lens for local traces.
+
+## PatchGym
+
+See [PatchGym traces](docs/patchgym-traces.md) for the direct integration with
+PatchGym run directories.
 
 ## Development
 

@@ -5,7 +5,7 @@ import json
 import sys
 from typing import List, Optional
 
-from .core import analyze_events, load_jsonl, render_markdown
+from .core import analyze_events, load_jsonl, load_patchgym_run, render_markdown
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -14,9 +14,19 @@ def main(argv: Optional[List[str]] = None) -> int:
     analyze = sub.add_parser("analyze", help="analyze a JSONL agent trace")
     analyze.add_argument("trace")
     analyze.add_argument("--json", action="store_true", help="emit JSON instead of Markdown")
+    patchgym = sub.add_parser("patchgym", help="analyze a PatchGym run directory")
+    patchgym.add_argument("run_dir")
+    patchgym.add_argument("--json", action="store_true", help="emit JSON instead of Markdown")
     args = parser.parse_args(argv)
     if args.command == "analyze":
         report = analyze_events(load_jsonl(args.trace))
+        if args.json:
+            print(json.dumps(report, indent=2, sort_keys=True))
+        else:
+            print(render_markdown(report), end="")
+        return 0
+    if args.command == "patchgym":
+        report = analyze_events(load_patchgym_run(args.run_dir))
         if args.json:
             print(json.dumps(report, indent=2, sort_keys=True))
         else:
